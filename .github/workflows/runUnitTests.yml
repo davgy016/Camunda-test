@@ -1,0 +1,60 @@
+name: 👽 Test Java With Maven & JUnit
+
+on: 
+  push: 
+    branches: [main]
+  pull_request: 
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # works to be done
+  build:        
+    name: Run JUnit Test
+    runs-on: ubuntu-latest # The job will run on an Ubuntu virtual machine
+
+    steps:
+      # Check out the code from the Github
+      - name: Check source
+        uses: actions/checkout@v4   
+
+      - name: install Java & Maven (local act only)
+        if: ${{env.ACT}}
+        run: |
+          apt-get update
+          apt-get install -y openjdk-21-jdk maven
+      
+      # Installs and configures JDK 17 to run Java and Maven
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: maven
+          check-latest: true
+          maven-version: '3.9.10'
+
+      # speeds up builds by caching, stored in m2(mvn local repo) and restore or download dependencies if needed
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{runner.os}}-maven-${{hashFiles('**/pom.xml')}}
+          restore-keys: ${{runner.os}}-maven
+
+      # removes old builds. Installing compiles code, running tests and install packages into m2 repo.
+      # - name: Clean & Install
+      #   run: mvn clean install
+      #   working-directory: ./testing # need to run from this directory instead if root because pom.xml is in testing
+
+
+      - name: Run test
+        run: mvn test
+        working-directory: ./testing
+      
+      # list dependencies updates  
+      - name: Update dependencies if needed
+        run: mvn versions:display-dependency-updates
+        working-directory: ./testing
+
+

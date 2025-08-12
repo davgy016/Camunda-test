@@ -1,0 +1,25 @@
+name: 🔍 Review Dog Style Checker  
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  checkstyle:
+    name: runner / checkstyle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Checkstyle with reviewdog
+        uses: dbelyaev/action-checkstyle@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+          checkstyle_config: ./checkStyle.xml
+          workdir: ./testing
