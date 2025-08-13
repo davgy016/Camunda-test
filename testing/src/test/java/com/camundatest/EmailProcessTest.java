@@ -7,11 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import static org.junit.jupiter.api.Assertions.*;
+
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ZeebeProcessTest
 public class EmailProcessTest {
@@ -25,7 +27,6 @@ public class EmailProcessTest {
     
     @BeforeEach
     public void setup() {
-        // Deploy the process before each test
         deployProcess();
     }
     
@@ -58,7 +59,6 @@ public class EmailProcessTest {
     }
     
     private void completeUserTask(long processInstanceKey, String messageContent) {
-        // Wait for and complete the user task
         var jobs = waitForJobs("io.camunda.zeebe:userTask", 1);
         var job = jobs.get(0);
         
@@ -68,13 +68,15 @@ public class EmailProcessTest {
                 .join();
     }
     
-    private void completeServiceTask() {
+    private void completeServiceTask(String expectedMessage) {
         var jobs = waitForJobs("email", 1);
         var job = jobs.get(0);
         
         // Verify the message content was passed correctly
         Map<String, Object> variables = job.getVariablesAsMap();
-        String messageContent = (String) variables.get("message_content");
+        String actualMessage = (String) variables.get("message_content");
+        assertEquals(expectedMessage, actualMessage, 
+            "Message content should match between user task and service task");
         
         client.newCompleteCommand(job.getKey())
                 .send()
@@ -95,10 +97,13 @@ public class EmailProcessTest {
                     return jobList;
                 }, jobList -> jobList.size() >= count);
     }
+    
+    private String truncateMessage(String message) {
+        return message.length() > 50 ? message.substring(0, 47) + "..." : message;
+    }
 
     @Test
     public void testEmailProcessWithDefaultMessage() {
-        // Test with default message
         testEmailProcessWithMessage(DEFAULT_MESSAGE);
     }
     
@@ -116,7 +121,7 @@ public class EmailProcessTest {
         "totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. " +
         "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos " +
         "qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, " +
-        "consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."  // Long message
+        "consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."
     })
     public void testEmailProcessWithDifferentMessages(String message) {
         testEmailProcessWithMessage(message);
@@ -124,45 +129,24 @@ public class EmailProcessTest {
     
     @Test
     public void testEmailProcessWithEmptyMessage() {
-        // Start the process without a message
+        // Note: Form validation (required=true, minLength=1) exists in BPMN but is only enforced 
+        // through Camunda UI/Tasklist API, not when programmatically completing tasks via Zeebe client
         ProcessInstanceEvent processInstance = startProcess("");
         System.out.println("Started process with empty message, instance key: " + processInstance.getProcessInstanceKey());
         
-        // Wait for the user task to be created
-        var jobs = waitForJobs("io.camunda.zeebe:userTask", 1);
-        var job = jobs.get(0);
+        // Complete the user task with empty message (bypasses form validation)
+        completeUserTask(processInstance.getProcessInstanceKey(), "");
         
-        // Try to complete the task with an empty message
-        try {
-            client.newCompleteCommand(job.getKey())
-                    .variables(Map.of("message_content", ""))
-                    .send()
-                    .join();
-            
-            // If we get here, the form validation didn't work as expected
-            // Check if the process is still at the user task
-            var jobAfterCompletion = waitForJobs("io.camunda.zeebe:userTask", 1);
-            if (jobAfterCompletion.isEmpty()) {
-                fail("Empty message was accepted but should have been rejected by form validation");
-            }
-            System.out.println("Form validation is working: Empty message was rejected");
-            
-        } catch (Exception e) {
-            // Check if this is a validation error
-            if (e.getMessage() != null && e.getMessage().contains("required")) {
-                System.out.println("Form validation is working: " + e.getMessage());
-            } else {
-                fail("Unexpected error when submitting empty message: " + e.getMessage(), e);
-            }
-        }
+        // Complete the service task (should receive empty message)
+        completeServiceTask("");
+        
+        System.out.println("Process completed successfully with empty message (form validation bypassed in test)");
     }
     
     @Test
     public void testProcessCancellation() {
-        // Start the process
         ProcessInstanceEvent processInstance = startProcess(DEFAULT_MESSAGE);
         
-        // Cancel the process instance
         client.newCancelInstanceCommand(processInstance.getProcessInstanceKey())
                 .send()
                 .join();
@@ -171,18 +155,12 @@ public class EmailProcessTest {
     }
     
     private void testEmailProcessWithMessage(String message) {
-        // Start a new process instance with the test message
         ProcessInstanceEvent processInstance = startProcess(message);
-        System.out.println("Testing with message: " + 
-            (message.length() > 50 ? message.substring(0, 47) + "..." : message));
+        System.out.println("Testing with message: " + truncateMessage(message));
             
-        // Complete the user task with the test message
         completeUserTask(processInstance.getProcessInstanceKey(), message);
+        completeServiceTask(message); // Now passes expected message for verification
         
-        // Complete the service task
-        completeServiceTask();
-        
-        System.out.println("Process completed successfully with message: " + 
-            (message.length() > 50 ? message.substring(0, 47) + "..." : message));
+        System.out.println("Process completed successfully with message: " + truncateMessage(message));
     }
 }
