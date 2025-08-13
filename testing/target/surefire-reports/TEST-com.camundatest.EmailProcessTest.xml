@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.camundatest.AppTest" time="0.148" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.camundatest.EmailProcessTest" time="17.299" tests="7" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -7,6 +7,7 @@
     <property name="java.vm.vendor" value="Microsoft"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://www.microsoft.com"/>
+    <property name="user.timezone" value="Etc/UTC"/>
     <property name="os.name" value="Linux"/>
     <property name="java.vm.specification.version" value="21"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
@@ -54,5 +55,56 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="com.camundatest.AppTest" time="0.065"/>
+  <testcase name="testEmailProcessWithDefaultMessage" classname="com.camundatest.EmailProcessTest" time="15.079">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Testing with message: This is a test email content
+Process completed successfully with message: This is a test email content
+]]></system-out>
+    <system-err><![CDATA[SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+]]></system-err>
+  </testcase>
+  <testcase name="testProcessCancellation" classname="com.camundatest.EmailProcessTest" time="0.212">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Process instance cancelled successfully
+]]></system-out>
+  </testcase>
+  <testcase name="testEmailProcessWithEmptyMessage" classname="com.camundatest.EmailProcessTest" time="0.427">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Started process with empty message, instance key: 2251799813685251
+Process completed successfully with empty message (form validation bypassed in test)
+]]></system-out>
+  </testcase>
+  <testcase name="testEmailProcessWithDifferentMessages(String)[1]" classname="com.camundatest.EmailProcessTest" time="0.403">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Testing with message: Short message
+Process completed successfully with message: Short message
+]]></system-out>
+  </testcase>
+  <testcase name="testEmailProcessWithDifferentMessages(String)[2]" classname="com.camundatest.EmailProcessTest" time="0.373">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Testing with message: Message with special characters: !@#$%^&*()_+{}...
+Process completed successfully with message: Message with special characters: !@#$%^&*()_+{}...
+]]></system-out>
+  </testcase>
+  <testcase name="testEmailProcessWithDifferentMessages(String)[3]" classname="com.camundatest.EmailProcessTest" time="0.373">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Testing with message: Message with unicode: 😊 你好 こんにちは
+Process completed successfully with message: Message with unicode: 😊 你好 こんにちは
+]]></system-out>
+  </testcase>
+  <testcase name="testEmailProcessWithDifferentMessages(String)[4]" classname="com.camundatest.EmailProcessTest" time="0.377">
+    <system-out><![CDATA[Deploying BPMN process: send-email.bpmn
+BPMN process deployed successfully
+Testing with message: A very long message: Lorem ipsum dolor sit amet...
+Process completed successfully with message: A very long message: Lorem ipsum dolor sit amet...
+]]></system-out>
+  </testcase>
 </testsuite>
