@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.camundatest.EmailProcessTest
 -------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.30 s -- in com.camundatest.EmailProcessTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.23 s -- in com.camundatest.EmailProcessTest

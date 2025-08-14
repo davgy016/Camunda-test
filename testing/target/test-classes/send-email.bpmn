@@ -21,7 +21,7 @@
     </bpmn:endEvent>
     <bpmn:userTask id="enterMessageTask" name="Enter Message">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="humanTask" />
+        <!-- <zeebe:taskDefinition type="humanTask" /> -->
         <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_15j79nd" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_19f2xg6</bpmn:incoming>
