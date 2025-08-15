@@ -1,0 +1,55 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "bc1bd75"
+  },
+  "schemaVersion": 19,
+  "id": "Form_1au2z2h",
+  "components": [
+    {
+      "text": "# Camunda App",
+      "type": "text",
+      "layout": {
+        "row": "Row_0v4oj49",
+        "columns": null
+      },
+      "id": "Field_1d1lgrj"
+    },
+    {
+      "label": "Application Number",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_19lfx67",
+        "columns": null
+      },
+      "id": "Field_110xb8e",
+      "key": "application_number",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Applicant",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1d1ybm1",
+        "columns": null
+      },
+      "id": "Field_0co7pdg",
+      "key": "is_applicant"
+    },
+    {
+      "label": "Current age",
+      "type": "number",
+      "layout": {
+        "row": "Row_1b2bzhq",
+        "columns": null
+      },
+      "id": "Field_11ufekp",
+      "key": "current_age"
+    }
+  ],
+  "type": "default"
+}
