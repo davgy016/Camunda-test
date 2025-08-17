@@ -3,7 +3,7 @@
   <bpmn:process id="send-email" name="Send Email" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="userTaskForm_15j79nd">{"components":[{"id":"textfield1","key":"message_content","label":"E-Mail Content","type":"textfield","parent":"default1","path":["components",0],"description":"Please enter the content of the E-Mail message","validate":{"required":true}}],"type":"default","id":"default1","path":[]}</zeebe:userTaskForm>
-      <zeebe:versionTag value="1.0" />
+      <zeebe:versionTag value="3" />
     </bpmn:extensionElements>
     <bpmn:startEvent id="StartEvent" name="Start">
       <bpmn:outgoing>Flow_19f2xg6</bpmn:outgoing>
@@ -29,7 +29,6 @@
       <bpmn:outgoing>Flow_0xoo3ml</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_156f3q7" sourceRef="sendEmailTask" targetRef="EndEvent" />
-    <bpmn:task id="Activity_103qj8z" name="testing" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="send-email">
@@ -50,10 +49,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0s2tnku_di" bpmnElement="enterMessageTask">
         <dc:Bounds x="269" y="120" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_103qj8z_di" bpmnElement="Activity_103qj8z">
-        <dc:Bounds x="460" y="280" width="100" height="80" />
-        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_19f2xg6_di" bpmnElement="Flow_19f2xg6">
         <di:waypoint x="195" y="160" />
