@@ -3,7 +3,7 @@
   <bpmn:process id="send-email" name="Send Email" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:userTaskForm id="userTaskForm_15j79nd">{"components":[{"id":"textfield1","key":"message_content","label":"E-Mail Content","type":"textfield","parent":"default1","path":["components",0],"description":"Please enter the content of the E-Mail message","validate":{"required":true}}],"type":"default","id":"default1","path":[]}</zeebe:userTaskForm>
-    <zeebe:versionTag value="test synching "></zeebe:versionTag></bpmn:extensionElements>
+    <zeebe:versionTag value="2.2"></zeebe:versionTag></bpmn:extensionElements>
     <bpmn:startEvent id="StartEvent" name="Start">
       <bpmn:outgoing>Flow_19f2xg6</bpmn:outgoing>
     </bpmn:startEvent>
