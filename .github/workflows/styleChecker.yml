@@ -1,7 +1,7 @@
 name: 🔍 Review Dog Style Checker  
 on:
   push: 
-    branches: [main]
+    branches:
   pull_request:
   workflow_dispatch:
 
