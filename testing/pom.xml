@@ -16,6 +16,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <zeebe.version>8.7.10</zeebe.version>
+     <camunda.version>7.22.0</camunda.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -34,7 +35,7 @@
     <!-- Camunda 8 Testing -->
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test-extension</artifactId>
+      <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
       <version>${zeebe.version}</version>
       <scope>test</scope>
     </dependency>
@@ -57,6 +58,19 @@
       <artifactId>junit-jupiter</artifactId>
       <version>1.17.6</version>
       <scope>test</scope>
+    </dependency>
+    <!-- BPMN Model API - REQUIRED for BPMN analysis in the helper class -->
+    <dependency>
+      <groupId>org.camunda.bpm.model</groupId>
+      <artifactId>camunda-bpmn-model</artifactId>
+      <version>${camunda.version}</version>
+    </dependency>
+
+    <!-- Optional: XML Model API (if you need to work with other model types) -->
+    <dependency>
+      <groupId>org.camunda.bpm.model</groupId>
+      <artifactId>camunda-xml-model</artifactId>
+      <version>${camunda.version}</version>
     </dependency>
   </dependencies>
 

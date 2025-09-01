@@ -1,12 +1,19 @@
 package com.camundatest;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
+
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import com.camundatest.utilities.DeployProcess;
+
 
 import javax.inject.Inject;
 import java.util.List;
@@ -15,53 +22,31 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//@ZeebeProcessTest with Testcontainers spins up one Zeebe broker per test class, not per test method.
+//The injected ZeebeClient is thread-safe and designed to handle multiple requests concurrently.
 @ZeebeProcessTest
 public class EmailProcessTest {
     private static final String PROCESS_ID = "send-email";
     private static final String DEFAULT_MESSAGE = "This is a test email content";
     private static final String USER_TASK_ELEMENT_ID = "enterMessageTask";
     private static final String SERVICE_TASK_ELEMENT_ID = "sendEmailTask";
+    private static String bpmnResource = "send-email.bpmn";
 
     @Inject
-    private ZeebeClient client;
+    ZeebeClient client;
 
+    
     @BeforeEach
     public void setup() {
-        deployProcess();
+            DeployProcess.deployProcess(client, bpmnResource);
     }
-
-    // Loads the BPMN from the classpath and deploys it to the test engine.
-    // join() blocks until the async deploy is done.
-    private void deployProcess() {
-        try {
-            String bpmnResource = "send-email.bpmn";
-            System.out.println("Deploying BPMN process: " + bpmnResource);
-
-            var deploymentEvent = client.newDeployResourceCommand()
-                    .addResourceFromClasspath(bpmnResource)
-                    .send()
-                    .join();
-
-            // Assert deployment was successful
-            assertNotNull(deploymentEvent, "Deployment event should not be null");
-            assertFalse(deploymentEvent.getProcesses().isEmpty(), "At least one process should be deployed");
-
-            // Verify the correct process was deployed
-            boolean processFound = deploymentEvent.getProcesses().stream()
-                    .anyMatch(process -> PROCESS_ID.equals(process.getBpmnProcessId()));
-            assertTrue(processFound, "Process '" + PROCESS_ID + "' should be deployed");
-
-            System.out.println("BPMN process deployed successfully");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to deploy BPMN process: " + e.getMessage(), e);
-        }
-    }
+    
 
     // Starts the newest version of send-email and sets two variables: testRunId and
     // message_content
     private ProcessInstanceEvent startProcess(String messageContent) {
         var processInstance = client.newCreateInstanceCommand()
-                .bpmnProcessId(PROCESS_ID)
+                .bpmnProcessId(DeployProcess.processId)
                 .latestVersion()
                 .variables(Map.of(
                         "testRunId", UUID.randomUUID().toString(),
