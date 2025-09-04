@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1drjmb8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="a71ebc4" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.7.0">
+  <bpmn:process id="ImprovedPaymentProcess" name="Improved Payment Process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_PaymentRequested" name="Payment requested">
+      <bpmn:outgoing>Flow_StartToPaymentDetails</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_CollectPaymentDetails" name="Collect payment details">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:paymentRequestForm" />
+        <zeebe:assignmentDefinition assignee="demo" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=paymentAmount" target="requestedAmount" />
+          <zeebe:output source="=customerId" target="customerId" />
+          <zeebe:output source="=paymentDescription" target="description" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_StartToPaymentDetails</bpmn:incoming>
+      <bpmn:outgoing>Flow_DetailsToCredit</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_CheckAvailableCredit" name="Check available credit">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="check-credit" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=customerId" target="customerId" />
+          <zeebe:output source="=availableCredit" target="availableCredit" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_DetailsToCredit</bpmn:incoming>
+      <bpmn:outgoing>Flow_CreditToDeduction</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_DeductCredit" name="Deduct available credit">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="deduct-credit" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=customerId" target="customerId" />
+          <zeebe:input source="=requestedAmount" target="requestedAmount" />
+          <zeebe:input source="=availableCredit" target="availableCredit" />
+          <zeebe:output source="=deductedAmount" target="deductedAmount" />
+          <zeebe:output source="=openAmount" target="openAmount" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CreditToDeduction</bpmn:incoming>
+      <bpmn:outgoing>Flow_DeductionToGateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_CreditSufficient" name="Credit sufficient?">
+      <bpmn:incoming>Flow_DeductionToGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_CreditSufficient_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CreditSufficient_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_CollectCreditCardData" name="Collect credit card data">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:creditCardForm" />
+        <zeebe:assignmentDefinition assignee="demo" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=cardNumber" target="cardNumber" />
+          <zeebe:output source="=cvc" target="cvc" />
+          <zeebe:output source="=expiryDate" target="expiryDate" />
+          <zeebe:output source="=cardholderName" target="cardholderName" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CreditSufficient_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_CardDataToCharge</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_ChargeCreditCard" name="Charge credit card">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="charge-credit-card" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=cardNumber" target="cardNumber" />
+          <zeebe:input source="=cvc" target="cvc" />
+          <zeebe:input source="=expiryDate" target="expiryDate" />
+          <zeebe:input source="=cardholderName" target="cardholderName" />
+          <zeebe:input source="=openAmount" target="chargeAmount" />
+          <zeebe:input source="=customerId" target="customerId" />
+          <zeebe:output source="=transactionId" target="transactionId" />
+          <zeebe:output source="=chargedAmount" target="chargedAmount" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CardDataToCharge</bpmn:incoming>
+      <bpmn:outgoing>Flow_ChargeToMerge</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_PaymentComplete">
+      <bpmn:incoming>Flow_CreditSufficient_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_ChargeToMerge</bpmn:incoming>
+      <bpmn:outgoing>Flow_MergeToEnd</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_PaymentCompleted" name="Payment completed">
+      <bpmn:incoming>Flow_MergeToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_StartToPaymentDetails" sourceRef="StartEvent_PaymentRequested" targetRef="Task_CollectPaymentDetails" />
+    <bpmn:sequenceFlow id="Flow_DetailsToCredit" sourceRef="Task_CollectPaymentDetails" targetRef="Task_CheckAvailableCredit" />
+    <bpmn:sequenceFlow id="Flow_CreditToDeduction" sourceRef="Task_CheckAvailableCredit" targetRef="Task_DeductCredit" />
+    <bpmn:sequenceFlow id="Flow_DeductionToGateway" sourceRef="Task_DeductCredit" targetRef="Gateway_CreditSufficient" />
+    <bpmn:sequenceFlow id="Flow_CreditSufficient_Yes" name="Yes" sourceRef="Gateway_CreditSufficient" targetRef="Gateway_PaymentComplete">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=openAmount = 0</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CreditSufficient_No" name="No" sourceRef="Gateway_CreditSufficient" targetRef="Task_CollectCreditCardData">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=openAmount &gt; 0</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CardDataToCharge" sourceRef="Task_CollectCreditCardData" targetRef="Task_ChargeCreditCard" />
+    <bpmn:sequenceFlow id="Flow_ChargeToMerge" sourceRef="Task_ChargeCreditCard" targetRef="Gateway_PaymentComplete" />
+    <bpmn:sequenceFlow id="Flow_MergeToEnd" sourceRef="Gateway_PaymentComplete" targetRef="EndEvent_PaymentCompleted" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ImprovedPaymentProcess">
+      <bpmndi:BPMNShape id="StartEvent_PaymentRequested_di" bpmnElement="StartEvent_PaymentRequested">
+        <dc:Bounds x="179" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="173" y="152" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CollectPaymentDetails_di" bpmnElement="Task_CollectPaymentDetails">
+        <dc:Bounds x="270" y="87" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckAvailableCredit_di" bpmnElement="Task_CheckAvailableCredit">
+        <dc:Bounds x="420" y="87" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DeductCredit_di" bpmnElement="Task_DeductCredit">
+        <dc:Bounds x="570" y="87" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CreditSufficient_di" bpmnElement="Gateway_CreditSufficient" isMarkerVisible="true">
+        <dc:Bounds x="720" y="102" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="704" y="72" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CollectCreditCardData_di" bpmnElement="Task_CollectCreditCardData">
+        <dc:Bounds x="720" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ChargeCreditCard_di" bpmnElement="Task_ChargeCreditCard">
+        <dc:Bounds x="870" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PaymentComplete_di" bpmnElement="Gateway_PaymentComplete" isMarkerVisible="true">
+        <dc:Bounds x="895" y="102" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_PaymentCompleted_di" bpmnElement="EndEvent_PaymentCompleted">
+        <dc:Bounds x="1000" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="983" y="152" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_StartToPaymentDetails_di" bpmnElement="Flow_StartToPaymentDetails">
+        <di:waypoint x="215" y="127" />
+        <di:waypoint x="270" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DetailsToCredit_di" bpmnElement="Flow_DetailsToCredit">
+        <di:waypoint x="370" y="127" />
+        <di:waypoint x="420" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CreditToDeduction_di" bpmnElement="Flow_CreditToDeduction">
+        <di:waypoint x="520" y="127" />
+        <di:waypoint x="570" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DeductionToGateway_di" bpmnElement="Flow_DeductionToGateway">
+        <di:waypoint x="670" y="127" />
+        <di:waypoint x="720" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CreditSufficient_Yes_di" bpmnElement="Flow_CreditSufficient_Yes">
+        <di:waypoint x="770" y="127" />
+        <di:waypoint x="895" y="127" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="824" y="109" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CreditSufficient_No_di" bpmnElement="Flow_CreditSufficient_No">
+        <di:waypoint x="745" y="152" />
+        <di:waypoint x="745" y="186" />
+        <di:waypoint x="770" y="186" />
+        <di:waypoint x="770" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="751" y="193" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CardDataToCharge_di" bpmnElement="Flow_CardDataToCharge">
+        <di:waypoint x="820" y="260" />
+        <di:waypoint x="870" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ChargeToMerge_di" bpmnElement="Flow_ChargeToMerge">
+        <di:waypoint x="920" y="220" />
+        <di:waypoint x="920" y="152" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MergeToEnd_di" bpmnElement="Flow_MergeToEnd">
+        <di:waypoint x="945" y="127" />
+        <di:waypoint x="1000" y="127" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
