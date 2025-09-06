@@ -41,7 +41,7 @@ public class EmailProcessTest {
                     .addResourceFromClasspath(bpmnResource)
                     .send()
                     .join();
-        System.out.println("Testiiiing  test again 123");
+        System.out.println("final testing fixed");
             // Assert deployment was successful
             assertNotNull(deploymentEvent, "Deployment event should not be null");
             assertFalse(deploymentEvent.getProcesses().isEmpty(), "At least one process should be deployed");
