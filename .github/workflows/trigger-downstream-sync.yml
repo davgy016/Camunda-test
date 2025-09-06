@@ -17,15 +17,8 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.DOWNSTREAM_SYNC_TOKEN }}" \
             https://api.github.com/repos/davgy016/firstSubtree/dispatches \
-            -d '{
-              "event_type": "subtree-update",
-              "client_payload": {
-                "repository": "${{ github.repository }}",
-                "sha": "${{ github.sha }}"
-              }
-            }' \
-            --fail-with-body
-          echo "Triggered subtree sync for commit ${{ github.sha }}"        
+            -d '{"event_type": "subtree-update"}' \
+            --fail-with-body       
       
       - name: Log trigger success
         run: |          
