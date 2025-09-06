@@ -1,19 +1,17 @@
-# .github/workflows/trigger-downstream-sync.yml
-# This workflow should be added to the UPSTREAM repository (davgy016/Camunda-test)
 
 name: Trigger Downstream Subtree Sync
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Manual trigger
+  workflow_dispatch:
 
 jobs:
   notify-downstream:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Trigger subtree sync in firstSubtree repository
+      - name: Trigger subtree sync 
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
@@ -23,15 +21,13 @@ jobs:
               "event_type": "subtree-update",
               "client_payload": {
                 "repository": "${{ github.repository }}",
-                "ref": "${{ github.ref }}",
-                "sha": "${{ github.sha }}",
-                "pusher": "${{ github.actor }}",
-                "timestamp": "${{ github.event.head_commit.timestamp }}"
+                "sha": "${{ github.sha }}"
               }
-            }'
+            }' \
+            --fail-with-body
+          echo "Triggered subtree sync for commit ${{ github.sha }}"        
       
       - name: Log trigger success
-        run: |
-          echo "✅ Successfully triggered subtree sync in davgy016/firstSubtree"
+        run: |          
           echo "📝 Triggered by: ${{ github.actor }}"
           echo "🔄 Commit: ${{ github.sha }}"
