@@ -1,26 +1,26 @@
 
-name: Trigger Downstream Subtree Sync
+# name: Trigger Downstream Subtree Sync
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [ main ]
+#   workflow_dispatch:
 
-jobs:
-  notify-downstream:
-    runs-on: ubuntu-latest
+# jobs:
+#   notify-downstream:
+#     runs-on: ubuntu-latest
     
-    steps:
-      - name: Trigger subtree sync 
-        run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token ${{ secrets.DOWNSTREAM_SYNC_TOKEN }}" \
-            https://api.github.com/repos/davgy016/firstSubtree/dispatches \
-            -d '{"event_type": "subtree-update"}' \
-            --fail-with-body       
+#     steps:
+#       - name: Trigger subtree sync 
+#         run: |
+#           curl -X POST \
+#             -H "Accept: application/vnd.github.v3+json" \
+#             -H "Authorization: token ${{ secrets.DOWNSTREAM_SYNC_TOKEN }}" \
+#             https://api.github.com/repos/davgy016/firstSubtree/dispatches \
+#             -d '{"event_type": "subtree-update"}' \
+#             --fail-with-body       
       
-      - name: Log trigger success
-        run: |          
-          echo "📝 Triggered by: ${{ github.actor }}"
-          echo "🔄 Commit: ${{ github.sha }}"
+#       - name: Log trigger success
+#         run: |          
+#           echo "📝 Triggered by: ${{ github.actor }}"
+#           echo "🔄 Commit: ${{ github.sha }}"
