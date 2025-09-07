@@ -41,7 +41,7 @@ public class EmailProcessTest {
                     .addResourceFromClasspath(bpmnResource)
                     .send()
                     .join();
-        System.out.println("Maybe fixed");
+        System.out.println("Test webhook");
             // Assert deployment was successful
             assertNotNull(deploymentEvent, "Deployment event should not be null");
             assertFalse(deploymentEvent.getProcesses().isEmpty(), "At least one process should be deployed");
