@@ -1,0 +1,361 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "34c1457"
+  },
+  "schemaVersion": 19,
+  "id": "Form_0qly0c2",
+  "components": [
+    {
+      "text": "### Restaurant Reservation Form",
+      "type": "text",
+      "layout": {
+        "row": "1",
+        "col": "16"
+      },
+      "id": "RestaurantReservationHeading"
+    },
+    {
+      "text": "##### Customer Information",
+      "type": "text",
+      "layout": {
+        "row": "2",
+        "col": "16"
+      },
+      "id": "CustomerInfoSubheading"
+    },
+    {
+      "label": "Customer Name",
+      "type": "textfield",
+      "layout": {
+        "row": "3",
+        "col": "8"
+      },
+      "id": "CustomerName",
+      "key": "customerName",
+      "validate": {
+        "required": true
+      },
+      "properties": { }
+    },
+    {
+      "label": "Loyalty Program Number (if applicable)",
+      "type": "textfield",
+      "layout": {
+        "row": "3",
+        "col": "8"
+      },
+      "id": "LoyaltyProgramNumber",
+      "key": "loyaltyProgramNumber"
+    },
+    {
+      "subtype": "date",
+      "type": "datetime",
+      "layout": {
+        "row": "4",
+        "col": "8"
+      },
+      "id": "ReservationDate",
+      "key": "reservationDate",
+      "dateLabel": "Date",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "subtype": "time",
+      "type": "datetime",
+      "layout": {
+        "row": "4",
+        "col": "8"
+      },
+      "id": "PreferredDiningTime",
+      "key": "preferredDiningTime",
+      "timeLabel": "Preferred Dining Time",
+      "validate": {
+        "required": true
+      },
+      "timeInterval": 15
+    },
+    {
+      "label": "Number of Diners",
+      "type": "number",
+      "layout": {
+        "row": "5",
+        "col": "8"
+      },
+      "id": "NumberOfDiners",
+      "key": "numberOfDiners",
+      "validate": {
+        "required": true,
+        "min": 1
+      }
+    },
+    {
+      "label": "Table Preference",
+      "values": [
+        {
+          "label": "Indoor",
+          "value": "indoor"
+        },
+        {
+          "label": "Outdoor",
+          "value": "outdoor"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "5",
+        "col": "8"
+      },
+      "id": "TablePreference",
+      "key": "tablePreference"
+    },
+    {
+      "label": "Smoking Preference",
+      "values": [
+        {
+          "label": "Smoking",
+          "value": "smoking"
+        },
+        {
+          "label": "Non-smoking",
+          "value": "non-smoking"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "6",
+        "col": "16"
+      },
+      "id": "SmokingPreference",
+      "key": "smokingPreference"
+    },
+    {
+      "label": "Dietary Restrictions/Allergies",
+      "type": "textarea",
+      "layout": {
+        "row": "7",
+        "col": "16"
+      },
+      "id": "DietaryRestrictions",
+      "key": "dietaryRestrictions"
+    },
+    {
+      "text": "##### Menu Selection",
+      "type": "text",
+      "layout": {
+        "row": "8",
+        "col": "16"
+      },
+      "id": "MenuSelectionSubheading"
+    },
+    {
+      "label": "Appetizer Selection",
+      "values": [
+        {
+          "label": "Value",
+          "value": "value"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "9",
+        "col": "8"
+      },
+      "id": "AppetizerSelection",
+      "key": "appetizerSelection"
+    },
+    {
+      "label": "Soup/Salad Selection",
+      "values": [
+        {
+          "label": "Value",
+          "value": "value"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "9",
+        "col": "8"
+      },
+      "id": "SoupSaladSelection",
+      "key": "soupSaladSelection"
+    },
+    {
+      "label": "Main Course Selection",
+      "values": [
+        {
+          "label": "Value",
+          "value": "value"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "10",
+        "col": "8"
+      },
+      "id": "MainCourseSelection",
+      "key": "mainCourseSelection"
+    },
+    {
+      "label": "Beverage Selection",
+      "values": [
+        {
+          "label": "Value",
+          "value": "value"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "11",
+        "col": "8"
+      },
+      "id": "BeverageSelection",
+      "key": "beverageSelection"
+    },
+    {
+      "label": "Dessert Selection",
+      "values": [
+        {
+          "label": "Value",
+          "value": "value"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "11",
+        "col": "8"
+      },
+      "id": "DessertSelection",
+      "key": "dessertSelection"
+    },
+    {
+      "label": "Special Requests/Instructions",
+      "type": "textarea",
+      "layout": {
+        "row": "12",
+        "col": "16"
+      },
+      "id": "SpecialRequests",
+      "key": "specialRequests"
+    },
+    {
+      "label": "Special Occasion (if any)",
+      "type": "textfield",
+      "layout": {
+        "row": "13",
+        "col": "16"
+      },
+      "id": "SpecialOccasion",
+      "key": "specialOccasion"
+    },
+    {
+      "text": "##### Payment Information",
+      "type": "text",
+      "layout": {
+        "row": "14",
+        "col": "16"
+      },
+      "id": "PaymentInfoSubheading"
+    },
+    {
+      "label": "Payment Method",
+      "values": [
+        {
+          "label": "Value",
+          "value": "value"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "15",
+        "col": "8"
+      },
+      "id": "PaymentMethod",
+      "key": "paymentMethod",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Tip Percentage",
+      "type": "number",
+      "layout": {
+        "row": "15",
+        "col": "8"
+      },
+      "id": "TipPercentage",
+      "key": "tipPercentage",
+      "appearance": {
+        "suffixAdorner": "%"
+      },
+      "validate": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "text": "##### Contact Information",
+      "type": "text",
+      "layout": {
+        "row": "16",
+        "col": "16"
+      },
+      "id": "ContactInfoSubheading"
+    },
+    {
+      "label": "Phone Number",
+      "type": "textfield",
+      "layout": {
+        "row": "17",
+        "col": "8"
+      },
+      "id": "PhoneNumber",
+      "key": "phoneNumber",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Email",
+      "type": "textfield",
+      "layout": {
+        "row": "17",
+        "col": "8"
+      },
+      "id": "Email",
+      "key": "email",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Confirmation Method Preference",
+      "values": [
+        {
+          "label": "Email",
+          "value": "email"
+        },
+        {
+          "label": "Phone",
+          "value": "phone"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "18",
+        "col": "16"
+      },
+      "id": "ConfirmationMethodPreference",
+      "key": "confirmationMethodPreference",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "generated": true,
+  "type": "default"
+}
